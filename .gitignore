@@ -1,0 +1,23 @@
+# 忽略 Python 虚拟环境
+venv/
+
+# 忽略 Python 编译缓存
+__pycache__/
+*.pyc
+
+# 忽略图片缓存或上传目录
+api/imgs/
+api/优雅漂亮/
+
+# 忽略备份文件夹
+backup_文件备份/
+
+# 忽略 Node.js 依赖
+react_image_app/node_modules/
+
+# 忽略临时文件和日志
+*.log
+*.tmp
+
+# 忽略环境变量配置
+.env
