@@ -6,6 +6,11 @@ from typing import List
 
 app = FastAPI(title="Image API")
 
+# 这个是最关键的地方！
+# 根目录，存放图片的文件夹！！！ 修改为你的图片目录
+# img_root_dir = "./imgs"   
+img_root_dir = "./pretty_nice"   
+
 # 配置 CORS，允许 React 访问
 app.add_middleware(
     CORSMiddleware,
@@ -20,13 +25,13 @@ app.add_middleware(
 )
 
 # 挂载静态文件目录
-app.mount("/images", StaticFiles(directory="imgs"), name="images")
+app.mount("/images", StaticFiles(directory=img_root_dir), name="images")
 
 # 获取图片列表（支持分页）
 @app.get("/images", response_model=List[dict])
 def get_images(skip: int = 0, limit: int = 5):
     # 获取 imgs/ 文件夹中的图片文件
-    image_dir = "imgs"
+    image_dir = img_root_dir 
     images = [
         {"filename": f, "url": f"/images/{f}"}
         for f in os.listdir(image_dir)
@@ -36,6 +41,7 @@ def get_images(skip: int = 0, limit: int = 5):
     total = len(images)
     images = images[skip:skip + limit]
     return images
+
 
 
 # 运行命令: 

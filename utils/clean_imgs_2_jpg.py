@@ -20,7 +20,7 @@ def convert_image_to_jpg(source="./", output_suffix="jpg"):
         print("文件夹不存在！")
         return
 
-    output_dir = r"C:\Users\Administrator\Desktop\temp_images_" + str(uuid.uuid4())
+    output_dir = r"C:\Users\Administrator\Desktop\temp_" + str(uuid.uuid4())
     os.makedirs(output_dir, exist_ok=True)
 
     # 1. source is a folder
@@ -50,10 +50,10 @@ def convert_image_to_jpg(source="./", output_suffix="jpg"):
         out_name = os.path.join(prefix, output_suffix)
         im = Image.open(source)
         im.save(out_name)
-    print("Done")
+    print("Done!")
 
 
 # 传入文件夹地址， 输出: 默认保存到桌面
-p = r"  d:\Pictures\clean_this  ".strip()
+p = r" F:\优雅漂亮  ".strip()
 convert_image_to_jpg(p)
 

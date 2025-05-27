@@ -8,6 +8,7 @@ __pycache__/
 # 忽略图片缓存或上传目录
 api/imgs/
 api/优雅漂亮/
+api/pretty_nice/
 
 # 忽略备份文件夹
 backup_文件备份/
