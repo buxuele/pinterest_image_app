@@ -9,6 +9,7 @@ __pycache__/
 api/imgs/
 api/优雅漂亮/
 api/pretty_nice/
+api/face/
 
 # 忽略备份文件夹
 backup_文件备份/

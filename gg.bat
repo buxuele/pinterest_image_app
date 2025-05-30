@@ -2,6 +2,8 @@
 :: 显示当前的 Git 状态
 git status
 
+git branch -M main
+
 :: 提示用户输入提交信息
 set /p message="Enter commit message: "
 
@@ -12,7 +14,7 @@ git add .
 git commit -m "%message%"
 
 :: 将本地的提交推送到远程仓库
-@REM git push
+git push -u origin main
 
 :: 显示执行 git push 后的 Git 状态
-@REM git status
+git status

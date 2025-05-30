@@ -25,5 +25,5 @@ def just_rename_imgs(directory):
 
 
 if __name__ == "__main__":
-    target = r"D:\fullStack\image_app\api\pretty_nice"
+    target = r" D:\fullStack\pinterest_image_app\api\face ".strip()
     just_rename_imgs(target)
