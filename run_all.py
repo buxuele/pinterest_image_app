@@ -42,3 +42,6 @@ if __name__ == '__main__':
         print("\n正在关闭...")
         api.terminate()
         frontend.terminate()
+
+
+

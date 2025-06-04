@@ -10,10 +10,12 @@ api/imgs/
 api/优雅漂亮/
 api/pretty_nice/
 api/face/
+small_imgs/
 
 # 忽略备份文件夹
 backup_文件备份/
 
+# ----------- React 项目相关 -----------
 # 忽略 Node.js 依赖
 react_image_app/node_modules/
 
@@ -23,3 +25,7 @@ react_image_app/node_modules/
 
 # 忽略环境变量配置
 .env
+del.py
+
+
+

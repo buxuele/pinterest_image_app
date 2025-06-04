@@ -41,7 +41,7 @@ const App = () => {
     const handleScroll = () => {
       if (
         window.innerHeight + document.documentElement.scrollTop >=
-        document.documentElement.offsetHeight - 50
+        document.documentElement.offsetHeight - 550
       ) {
         fetchImages();
       }
