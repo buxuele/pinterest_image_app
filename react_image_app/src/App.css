@@ -1,57 +1,79 @@
 .app {
-  max-width: 2400px; /* Keep this for consistency, but grid width will override */
-  margin: 0 auto;
-  padding: 20px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  position: relative;
 }
 
-h1 {
-  text-align: center;
-  margin-bottom: 20px;
+.navbar {
+  position: relative;
+  z-index: 1000;
+}
+
+.content {
+  flex: 1;
+  padding: 20px 0;
+  width: 100%;
 }
 
 .image-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr); /* Three columns */
-  gap: 20px; /* Spacing between images */
-  width: 95%; /* Set grid to occupy 95% of viewport width */
-  margin: 0 auto; /* Center the grid */
-  padding: 0 10px;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  padding: 20px 0;
+  width: 100%;
 }
 
 .image-item {
-  margin: 0; /* Remove default margin */
-  break-inside: avoid; /* Prevent images from breaking in waterfall */
+  position: relative;
+  width: 100%;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s;
+}
+
+.image-item:hover {
+  transform: scale(1.02);
 }
 
 .image-item img {
-  width: 100%; /* Image fills column width */
-  height: auto; /* Height adapts automatically */
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s ease;
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: cover;
 }
 
-.image-item img:hover {
-  transform: scale(1.02); /* Hover effect */
-}
-
-p {
-  text-align: center;
-  color: #666;
-  margin: 20px 0;
-}
-
-/* Responsive design */
+/* 响应式调整 */
 @media (max-width: 768px) {
   .image-grid {
-    grid-template-columns: repeat(2, 1fr); /* Two columns for tablets */
-    width: 95%; /* Maintain 95% width */
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
   }
 }
 
 @media (max-width: 480px) {
   .image-grid {
-    grid-template-columns: 1fr; /* One column for mobile */
-    width: 95%; /* Maintain 95% width */
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+}
+
+@keyframes fadeInOut {
+  0% {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  15% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  85% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-20px);
   }
 }

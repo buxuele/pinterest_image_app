@@ -1,5 +1,6 @@
 # 忽略 Python 虚拟环境
 venv/
+img_venv/
 
 # 忽略 Python 编译缓存
 __pycache__/
@@ -7,9 +8,11 @@ __pycache__/
 
 # 忽略图片缓存或上传目录
 api/imgs/
-api/优雅漂亮/
 api/pretty_nice/
 api/face/
+api/user_uploads/
+
+imgs/
 small_imgs/
 
 # 忽略备份文件夹

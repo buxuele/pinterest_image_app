@@ -3,7 +3,7 @@ import uuid
 
 
 # 遍历指定目录中的图片文件，并使用新的 UUID（前12位）作为文件名重命名，
-def just_rename_imgs(directory):
+def just_rename_imgs(directory, show=False):
     valid_extensions = {'.jpg', '.jpeg', '.png', '.bmp', '.gif', '.webp', '.tiff'}
 
     for entry in os.listdir(directory):
@@ -21,9 +21,12 @@ def just_rename_imgs(directory):
         new_path = os.path.join(directory, new_name)
 
         os.rename(full_path, new_path)
-        print(f"Renamed: {entry} -> {new_name}")
+        if show:
+            print(f"Renamed: {entry} -> {new_name}")
 
 
 if __name__ == "__main__":
-    target = r" D:\fullStack\pinterest_image_app\api\face ".strip()
-    just_rename_imgs(target)
+    target = r" D:\fullStack\pinterest_image_app\api\imgs ".strip()
+    just_rename_imgs(target, show=True)
+
+
