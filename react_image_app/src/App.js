@@ -2,8 +2,6 @@ import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import ImageWaterfall from './components/ImageWaterfall';
-import TranslateTool from './components/TranslateTool';
-import QuotesPage from './components/QuotesPage';
 import MyImagesPage from './components/MyImagesPage';
 import './App.css';
 
@@ -15,8 +13,7 @@ const App = () => {
         <div className="content">
           <Routes>
             <Route path="/" element={<ImageWaterfall />} />
-            <Route path="/translate" element={<TranslateTool />} />
-            <Route path="/quotes" element={<QuotesPage />} />
+            
             <Route path="/my-images" element={<MyImagesPage />} />
           </Routes>
         </div>

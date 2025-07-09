@@ -1,6 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
+import Masonry from 'react-masonry-css'; // 引入 Masonry 组件
 import ImageItem from './ImageItem';
+
+// 定义断点，用于响应式布局
+const breakpointColumnsObj = {
+  default: 3,
+  1100: 2,
+  700: 2,
+  500: 1
+};
 
 const ImageWaterfall = () => {
   const [images, setImages] = useState([]);
@@ -9,18 +18,60 @@ const ImageWaterfall = () => {
   const [hasMore, setHasMore] = useState(true);
   const [error, setError] = useState(null);
   const [reshuffling, setReshuffling] = useState(false);
+  const loadingRef = useRef(false);
+
+  const fetchImages = async () => {
+    if (loadingRef.current || !hasMore) return;
+    loadingRef.current = true;
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await axios.get(`/images?skip=${skip}&limit=5`);
+      const newImages = response.data;
+      if (newImages.length === 0) {
+        setHasMore(false);
+      } else {
+        setImages((prevImages) => [...prevImages, ...newImages]);
+        setSkip((prevSkip) => prevSkip + 5);
+      }
+    } catch (error) {
+      console.error('请求失败：', error.message, error.response);
+      setError('无法加载图片，请检查服务器');
+    } finally {
+      setLoading(false);
+      loadingRef.current = false;
+    }
+  };
 
   const reshuffleImages = async () => {
     setReshuffling(true);
     setError(null);
     try {
-      const response = await axios.post('http://192.168.1.3:8000/api/reshuffle-images');
+      const response = await axios.post('/api/reshuffle-images');
       if (response.data.status === 'success') {
-        // 重置状态并重新加载图片
         setImages([]);
         setSkip(0);
         setHasMore(true);
-        await fetchImages();
+        const fetchWithSkipZero = async () => {
+            if (loadingRef.current) return;
+            loadingRef.current = true;
+            setLoading(true);
+            try {
+                const res = await axios.get(`/images?skip=0&limit=5`);
+                if (res.data.length > 0) {
+                    setImages(res.data);
+                    setSkip(5);
+                } else {
+                    setHasMore(false);
+                }
+            } catch(e) {
+                setError('无法加载图片，请检查服务器');
+            } finally {
+                loadingRef.current = false;
+                setLoading(false);
+            }
+        }
+        await fetchWithSkipZero();
       } else {
         setError('重命名图片失败');
       }
@@ -31,40 +82,14 @@ const ImageWaterfall = () => {
     setReshuffling(false);
   };
 
-  // 在页面加载时调用重命名
   useEffect(() => {
     const shouldReshuffle = !sessionStorage.getItem('hasReshuffled');
     if (shouldReshuffle) {
-      reshuffleImages();
       sessionStorage.setItem('hasReshuffled', 'true');
+      reshuffleImages();
+    } else {
+      fetchImages();
     }
-  }, []);
-
-  const fetchImages = async () => {
-    if (loading || !hasMore) return;
-    console.log(`请求图片：skip=${skip}, limit=5`);
-    setLoading(true);
-    setError(null);
-    try {
-      const response = await axios.get(`http://192.168.1.3:8000/images?skip=${skip}&limit=5`);
-      console.log('API 响应：', response.data);
-      const newImages = response.data;
-      if (newImages.length === 0) {
-        setHasMore(false);
-        console.log('没有更多图片');
-      } else {
-        setImages((prevImages) => [...prevImages, ...newImages]);
-        setSkip((prevSkip) => prevSkip + 5);
-      }
-    } catch (error) {
-      console.error('请求失败：', error.message, error.response);
-      setError('无法加载图片，请检查服务器');
-    }
-    setLoading(false);
-  };
-
-  useEffect(() => {
-    fetchImages();
   }, []);
 
   useEffect(() => {
@@ -76,7 +101,6 @@ const ImageWaterfall = () => {
         fetchImages();
       }
     };
-
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, [loading, hasMore]);
@@ -92,15 +116,22 @@ const ImageWaterfall = () => {
       </button>
       {error && <p className="text-danger text-center">{error}</p>}
       {images.length === 0 && !loading && !error && <p>暂无图片</p>}
-      <div className="image-grid">
+
+      {/* 使用 Masonry 组件替换原来的 .image-grid div */}
+      <Masonry
+        breakpointCols={breakpointColumnsObj}
+        className="my-masonry-grid"
+        columnClassName="my-masonry-grid_column"
+      >
         {images.map((image, index) => (
           <ImageItem key={image.filename + index} image={image} />
         ))}
-      </div>
+      </Masonry>
+
       {loading && <p className="text-center">加载中...</p>}
       {!hasMore && <p className="text-center">没有更多图片了</p>}
     </div>
   );
 };
 
-export default ImageWaterfall; 
+export default ImageWaterfall;

@@ -32,22 +32,8 @@ const Navbar = () => {
                 图片瀑布流
               </Link>
             </li>
-            <li className="nav-item">
-              <Link 
-                className={`nav-link ${location.pathname === '/translate' ? 'active' : ''}`} 
-                to="/translate"
-              >
-                翻译工具
-              </Link>
-            </li>
-            <li className="nav-item">
-              <Link 
-                className={`nav-link ${location.pathname === '/quotes' ? 'active' : ''}`} 
-                to="/quotes"
-              >
-                名言警句
-              </Link>
-            </li>
+
+
             <li className="nav-item">
               <Link 
                 className={`nav-link ${location.pathname === '/my-images' ? 'active' : ''}`} 

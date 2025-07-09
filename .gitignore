@@ -1,19 +1,25 @@
 # 忽略 Python 虚拟环境
 venv/
 img_venv/
+.idea/
+
+
+python_api/pinterest_venv/
 
 # 忽略 Python 编译缓存
 __pycache__/
 *.pyc
 
 # 忽略图片缓存或上传目录
-api/imgs/
-api/pretty_nice/
-api/face/
-api/user_uploads/
+python_api/user_uploads/
+python_api/pinterest_venv/
+python_api/nice_imgs/
+
 
 imgs/
 small_imgs/
+
+过程说明.md
 
 # 忽略备份文件夹
 backup_文件备份/

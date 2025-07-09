@@ -1,10 +1,9 @@
 @echo off
 setlocal EnableDelayedExpansion
- 
 
 :: Activate virtual environment and keep it active
 echo Activating virtual environment...
-call .\img_venv\Scripts\activate
+call .\python_api\pinterest_venv\Scripts\activate
 if !errorlevel! neq 0 (
     echo Failed to activate virtual environment
     exit /b 1

@@ -16,13 +16,33 @@
   width: 100%;
 }
 
-.image-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 20px;
-  padding: 20px 0;
-  width: 100%;
+/* --- Masonry 布局样式 --- */
+.my-masonry-grid {
+  display: -webkit-box; /* 老版本 Safari */
+  display: -ms-flexbox; /* IE10 */
+  display: flex;
+  margin-left: -20px; /* 补偿列的 padding */
+  width: auto;
 }
+
+.my-masonry-grid_column {
+  padding-left: 20px; /* 列之间的间距 */
+  background-clip: padding-box;
+}
+
+/* Masonry 中的每个项目 */
+.my-masonry-grid_column > div { /* 直接子元素，也就是我们的 ImageItem */
+  margin-bottom: 20px; /* 项目之间的垂直间距 */
+}
+/* --- Masonry 样式结束 --- */
+
+
+/* --- 旧的 .image-grid 及其相关样式已被 Masonry 替代，可以删除了 --- */
+/*
+.image-grid { ... }
+@media (max-width: 768px) { ... }
+@media (max-width: 480px) { ... }
+*/
 
 .image-item {
   position: relative;
@@ -30,11 +50,7 @@
   border-radius: 8px;
   overflow: hidden;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s;
-}
-
-.image-item:hover {
-  transform: scale(1.02);
+  /* transition: transform 0.2s;  悬停动画已经删除 */
 }
 
 .image-item img {
@@ -42,21 +58,6 @@
   height: auto;
   display: block;
   object-fit: cover;
-}
-
-/* 响应式调整 */
-@media (max-width: 768px) {
-  .image-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 15px;
-  }
-}
-
-@media (max-width: 480px) {
-  .image-grid {
-    grid-template-columns: 1fr;
-    gap: 10px;
-  }
 }
 
 @keyframes fadeInOut {

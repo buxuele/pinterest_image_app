@@ -1,11 +1,11 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
 
 const ImageUpload = ({ onUploadSuccess }) => {
   const [isDragging, setIsDragging] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState(null);
-  const [selectedFiles, setSelectedFiles] = useState([]);
+  const [selectedFiles, setSelectedFiles] = useState([]); // Changed to store { file, previewUrl }
   const [uploadStatus, setUploadStatus] = useState(null);
   const fileInputRef = useRef(null);
 
@@ -32,7 +32,13 @@ const ImageUpload = ({ onUploadSuccess }) => {
   };
 
   const handleFiles = (files) => {
-    const imageFiles = files.filter(file => file.type.startsWith('image/'));
+    const imageFiles = files
+      .filter(file => file.type.startsWith('image/'))
+      .map(file => ({
+        file,
+        previewUrl: URL.createObjectURL(file)
+      }));
+
     if (imageFiles.length === 0) {
       setError('请选择图片文件');
       return;
@@ -54,7 +60,7 @@ const ImageUpload = ({ onUploadSuccess }) => {
 
     try {
       for (let i = 0; i < selectedFiles.length; i++) {
-        const file = selectedFiles[i];
+        const file = selectedFiles[i].file; // Extract file object
         const formData = new FormData();
         formData.append('file', file);
 
@@ -77,10 +83,7 @@ const ImageUpload = ({ onUploadSuccess }) => {
         }
       }
       // Clear selected files after successful upload
-      setSelectedFiles([]);
-      if (fileInputRef.current) {
-        fileInputRef.current.value = '';
-      }
+      clearSelection(); // Use clearSelection to also revoke URLs
     } catch (error) {
       console.error('上传失败:', error);
       setError(error.message || '上传失败，请重试');
@@ -90,6 +93,8 @@ const ImageUpload = ({ onUploadSuccess }) => {
   };
 
   const clearSelection = () => {
+    // Revoke the object URLs to avoid memory leaks
+    selectedFiles.forEach(item => URL.revokeObjectURL(item.previewUrl));
     setSelectedFiles([]);
     setError(null);
     setUploadStatus(null);
@@ -97,6 +102,13 @@ const ImageUpload = ({ onUploadSuccess }) => {
       fileInputRef.current.value = '';
     }
   };
+
+  // Cleanup effect to revoke URLs on unmount
+  useEffect(() => {
+    return () => {
+      selectedFiles.forEach(item => URL.revokeObjectURL(item.previewUrl));
+    };
+  }, [selectedFiles]);
 
   return (
     <div className="image-upload">
@@ -134,15 +146,22 @@ const ImageUpload = ({ onUploadSuccess }) => {
         ) : selectedFiles.length > 0 ? (
           <div>
             <p className="mb-2">已选择 {selectedFiles.length} 个文件：</p>
-            <ul className="list-unstyled">
-              {selectedFiles.map((file, index) => (
-                <li key={index} className="mb-1">
-                  {file.name} 
-                  {uploadStatus?.[file.name] === 'success' && 
-                    <span className="text-success ms-2">✓</span>}
-                </li>
+            <div className="d-flex flex-wrap justify-content-center gap-2">
+              {selectedFiles.map((item, index) => (
+                <div key={index} className="mb-1 text-center">
+                  <img 
+                    src={item.previewUrl} 
+                    alt={item.file.name} 
+                    style={{ width: '100px', height: '100px', objectFit: 'cover', borderRadius: '8px' }} 
+                  />
+                  <p className="mb-0" style={{ fontSize: '12px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', width: '100px' }}>
+                    {item.file.name}
+                  </p>
+                  {uploadStatus?.[item.file.name] === 'success' && 
+                    <span className="text-success">✓</span>}
+                </div>
               ))}
-            </ul>
+            </div>
           </div>
         ) : (
           <div>

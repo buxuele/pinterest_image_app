@@ -111,7 +111,7 @@ const MyImagesPage = () => {
           </button>
         </div>
       ) : (
-        <div className="row row-cols-2 row-cols-md-3 row-cols-lg-6 g-4">
+        <div className="row row-cols-2 row-cols-md-3 row-cols-lg-5 g-4">
           {images.map((image) => (
             <div key={image.filename} className="col">
               <div className="card h-100">
@@ -120,12 +120,15 @@ const MyImagesPage = () => {
                   className="card-img-top"
                   alt={image.filename}
                   style={{
-                    height: '200px',
-                    objectFit: 'cover'
+                    // height: '200px', // 我们不再需要固定的高度
+                    width: '100%', // 确保图片宽度填满卡片列
+                    aspectRatio: '1 / 1', // 核心改动：设置宽高比为1:1，即正方形
+                    objectFit: 'contain', // 保持不变，确保图片内容完整
+                    backgroundColor: '#212529' // 保持不变，作为背景填充
                   }}
                 />
-                <div className="card-body p-2">
-                  <p className="card-text small text-muted mb-1">
+                <div className="card-body p-2 d-flex flex-column">
+                  <p className="card-text small text-muted mb-2 flex-grow-1">
                     {image.upload_time}
                   </p>
                   <button
@@ -169,4 +172,4 @@ const MyImagesPage = () => {
   );
 };
 
-export default MyImagesPage; 
+export default MyImagesPage;

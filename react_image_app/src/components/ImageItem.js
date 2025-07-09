@@ -54,7 +54,7 @@ const ImageItem = ({ image }) => {
       <div className="image-item">
         <img
           ref={imageRef}
-          src={`http://192.168.1.3:8000${image.url}`}
+          src={`${image.url}`}
           alt={image.filename}
           className="image"
           onClick={handleImageClick}
@@ -79,7 +79,7 @@ const ImageItem = ({ image }) => {
           <div className="preview-image-container">
             <img
               ref={previewImageRef}
-              src={`http://192.168.1.3:8000${image.url}`}
+              src={`${image.url}`}
               alt={image.filename}
               className="preview-image"
               style={{ 
