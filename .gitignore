@@ -1,40 +1,14 @@
-# 忽略 Python 虚拟环境
-venv/
-img_venv/
+ 
 .idea/
-
+node_modules/
 
 python_api/pinterest_venv/
-
-# 忽略 Python 编译缓存
-__pycache__/
-*.pyc
-
-# 忽略图片缓存或上传目录
 python_api/user_uploads/
-python_api/pinterest_venv/
 python_api/nice_imgs/
 
-
-imgs/
-small_imgs/
-
+.env
+gg.bat
 过程说明.md
 
-# 忽略备份文件夹
-backup_文件备份/
 
-# ----------- React 项目相关 -----------
-# 忽略 Node.js 依赖
 react_image_app/node_modules/
-
-# 忽略临时文件和日志
-*.log
-*.tmp
-
-# 忽略环境变量配置
-.env
-del.py
-
-
-
