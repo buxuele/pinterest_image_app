@@ -1,9 +1,9 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import axios from 'axios';
-import Masonry from 'react-masonry-css'; // 引入 Masonry 组件
+import Masonry from 'react-masonry-css';
 import ImageItem from './ImageItem';
+import throttle from 'lodash/throttle';
 
-// 定义断点，用于响应式布局
 const breakpointColumnsObj = {
   default: 3,
   1100: 2,
@@ -19,20 +19,21 @@ const ImageWaterfall = () => {
   const [error, setError] = useState(null);
   const [reshuffling, setReshuffling] = useState(false);
   const loadingRef = useRef(false);
+  const batchSize = 10; // 增加每次加载图片的数量
 
-  const fetchImages = async () => {
+  const fetchImages = useCallback(async () => {
     if (loadingRef.current || !hasMore) return;
     loadingRef.current = true;
     setLoading(true);
     setError(null);
     try {
-      const response = await axios.get(`/images?skip=${skip}&limit=5`);
+      const response = await axios.get(`/images?skip=${skip}&limit=${batchSize}`);
       const newImages = response.data;
       if (newImages.length === 0) {
         setHasMore(false);
       } else {
         setImages((prevImages) => [...prevImages, ...newImages]);
-        setSkip((prevSkip) => prevSkip + 5);
+        setSkip((prevSkip) => prevSkip + batchSize);
       }
     } catch (error) {
       console.error('请求失败：', error.message, error.response);
@@ -41,7 +42,7 @@ const ImageWaterfall = () => {
       setLoading(false);
       loadingRef.current = false;
     }
-  };
+  }, [skip, hasMore, batchSize]); // useCallback 依赖项
 
   const reshuffleImages = async () => {
     setReshuffling(true);
@@ -52,26 +53,14 @@ const ImageWaterfall = () => {
         setImages([]);
         setSkip(0);
         setHasMore(true);
-        const fetchWithSkipZero = async () => {
-            if (loadingRef.current) return;
-            loadingRef.current = true;
-            setLoading(true);
-            try {
-                const res = await axios.get(`/images?skip=0&limit=5`);
-                if (res.data.length > 0) {
-                    setImages(res.data);
-                    setSkip(5);
-                } else {
-                    setHasMore(false);
-                }
-            } catch(e) {
-                setError('无法加载图片，请检查服务器');
-            } finally {
-                loadingRef.current = false;
-                setLoading(false);
-            }
+        // 确保在重置后立即获取新数据
+        const res = await axios.get(`/images?skip=0&limit=${batchSize}`);
+        if (res.data.length > 0) {
+            setImages(res.data);
+            setSkip(batchSize);
+        } else {
+            setHasMore(false);
         }
-        await fetchWithSkipZero();
       } else {
         setError('重命名图片失败');
       }
@@ -90,20 +79,25 @@ const ImageWaterfall = () => {
     } else {
       fetchImages();
     }
-  }, []);
+  }, []); // 依赖项为空，仅在组件挂载时运行
 
   useEffect(() => {
-    const handleScroll = () => {
+    // 使用节流函数来优化滚动事件处理
+    const handleScroll = throttle(() => {
       if (
         window.innerHeight + document.documentElement.scrollTop >=
         document.documentElement.offsetHeight - 800
       ) {
         fetchImages();
       }
-    };
+    }, 300); // 每 300ms 最多执行一次
+
     window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, [loading, hasMore]);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      handleScroll.cancel(); // 组件卸载时取消任何待处理的节流调用
+    };
+  }, [fetchImages]); // 依赖于 fetchImages
 
   return (
     <div className="mt-4">
@@ -117,14 +111,13 @@ const ImageWaterfall = () => {
       {error && <p className="text-danger text-center">{error}</p>}
       {images.length === 0 && !loading && !error && <p>暂无图片</p>}
 
-      {/* 使用 Masonry 组件替换原来的 .image-grid div */}
       <Masonry
         breakpointCols={breakpointColumnsObj}
         className="my-masonry-grid"
         columnClassName="my-masonry-grid_column"
       >
-        {images.map((image, index) => (
-          <ImageItem key={image.filename + index} image={image} />
+        {images.map((image) => (
+          <ImageItem key={image.filename} image={image} /> // 使用稳定且唯一的 key
         ))}
       </Masonry>
 

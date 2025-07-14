@@ -14,7 +14,8 @@ app = FastAPI(title="Image API")
 
 # !!!!! 这个是最关键的地方 !!!!!
 # 根目录，存放图片的文件夹！！！ 修改为你的图片目录
-img_root_dir = "./nice_imgs"
+# img_root_dir = "./nice_imgs"
+img_root_dir = r"D:\1_dd_videos\temp_imgs"
 
 # 配置 CORS，允许 React 访问
 app.add_middleware(

@@ -54,6 +54,6 @@ def convert_image_to_jpg(source="./", output_suffix="jpg"):
 
 
 # 传入文件夹地址， 输出: 默认保存到桌面
-p = r" C:\Users\Administrator\Videos\clean_this  ".strip()
+p = r"   C:\Users\Administrator\Desktop\ebay_images  ".strip()
 convert_image_to_jpg(p)
 
