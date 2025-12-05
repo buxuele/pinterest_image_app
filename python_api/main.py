@@ -12,10 +12,10 @@ from utils.rename_imgs import *
 
 app = FastAPI(title="Image API")
 
-# !!!!! 这个是最关键的地方 !!!!!
-# 根目录，存放图片的文件夹！！！ 修改为你的图片目录
-# img_root_dir = "./nice_imgs"
-img_root_dir = r"D:\1_dd_videos\temp_imgs"
+# 修图片目录  street star 
+ 
+img_root_dir = r" cool_imgs ".strip()   
+
 
 # 配置 CORS，允许 React 访问
 app.add_middleware(
@@ -23,6 +23,8 @@ app.add_middleware(
     # allow_origins=["http://localhost:3000", "http://localhost:3001",
     #                "http://192.168.1.*",  # 或者用通配符匹配局域网范围（视框架支持）
     #                "*"],
+
+    
     allow_origins=[ "*" ],
 
     allow_credentials=True,

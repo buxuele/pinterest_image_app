@@ -26,8 +26,5 @@ def just_rename_imgs(directory, show=False):
 
 
 if __name__ == "__main__":
-    target = r" D:\fullStack\pinterest_image_app\api\ebay_1 ".strip()
+    target = r" D:\fullStack\pinterest_image_app\python_api\cool_imgs ".strip()
     just_rename_imgs(target, show=True)
-
-
-# 

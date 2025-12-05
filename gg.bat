@@ -1,5 +1,5 @@
-@echo off                 ; 关闭命令的回显，即执行命令时不会显示命令本身
-:: 显示当前的 Git 状态
+@echo off                  
+ 
 git status
 
 git branch -M main
