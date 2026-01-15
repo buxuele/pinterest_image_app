@@ -7,18 +7,17 @@ def start_api(path):
     # 启动 FastAPI 服务，使用 uvicorn。 
 
     # 设置工作目录为 api 子目录
-    api_dir = os.path.join(path, 'python_api')
+    api_dir = os.path.join(path, 'backend_python_api')
     # 在 api 目录下运行 uvicorn，启动 main.py 中的 app
     subprocess.call(['uvicorn', 'main:app', '--reload', '--host', '0.0.0.0', '--port', '8000'], cwd=api_dir)
 
 def start_frontend(path):
     # 启动 React 前端。 
     
-    # 设置工作目录为 react_image_app 子目录
-    react_dir = os.path.join(path, 'react_image_app')
+    # 设置工作目录为 frontend_react_app 子目录
+    react_dir = os.path.join(path, 'frontend_react_app')
     # 在 react_image_app 目录下运行 npm start
     subprocess.call(['npm', 'start'], cwd=react_dir, shell=(os.name == 'nt'))
-
 
 
 if __name__ == '__main__':

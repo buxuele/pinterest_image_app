@@ -2,12 +2,16 @@
 .idea/
 node_modules/
 
-python_api/pinterest_venv/
-python_api/user_uploads/
-python_api/nice_imgs/
+backend_python_api/pinterest_venv/
+backend_python_api/pinterest_venv/
+/user_uploads/
+backend_python_api/pinterest_venv/
+/nice_imgs/
 
 .env
 gg.bat
 过程说明.md
 
-react_image_app/node_modules/
+frontend_react_app/node_modules/
+
+imgs_data/
