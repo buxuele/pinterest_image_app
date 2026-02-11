@@ -1,12 +1,25 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { apiClient } from '../config/api';
 
-const Navbar = () => {
+const Navbar = ({ onColumnsChange, currentColumns, currentFolder }) => {
   const location = useLocation();
   const navigate = useNavigate();
+  const [reshuffling, setReshuffling] = useState(false);
 
   const handleUploadClick = () => {
     navigate('/my-images');
+  };
+
+  const reshuffleImages = async () => {
+    setReshuffling(true);
+    try {
+      await apiClient.post(`/api/reshuffle-images?folder=${currentFolder}`);
+      window.location.reload();
+    } catch (error) {
+      console.error('打乱失败:', error);
+    }
+    setReshuffling(false);
   };
 
   return (
@@ -32,8 +45,6 @@ const Navbar = () => {
                 图片瀑布流
               </Link>
             </li>
-
-
             <li className="nav-item">
               <Link 
                 className={`nav-link ${location.pathname === '/my-images' ? 'active' : ''}`} 
@@ -44,12 +55,37 @@ const Navbar = () => {
             </li>
           </ul>
           
-          <button 
-            className="btn btn-outline-light"
-            onClick={handleUploadClick}
-          >
-            上传图片
-          </button>
+          <div className="d-flex align-items-center gap-2">
+            {location.pathname === '/' && (
+              <>
+                <button 
+                  className="btn btn-success"
+                  onClick={reshuffleImages}
+                  disabled={reshuffling}
+                >
+                  {reshuffling ? '打乱中...' : '打乱'}
+                </button>
+                
+                <select 
+                  className="form-select"
+                  value={currentColumns}
+                  onChange={(e) => onColumnsChange(Number(e.target.value))}
+                  style={{ width: '80px' }}
+                >
+                  {[1, 2, 3, 4, 5, 6].map(num => (
+                    <option key={num} value={num}>{num}列</option>
+                  ))}
+                </select>
+              </>
+            )}
+            
+            <button 
+              className="btn btn-outline-light"
+              onClick={handleUploadClick}
+            >
+              上传图片
+            </button>
+          </div>
         </div>
       </div>
     </nav>

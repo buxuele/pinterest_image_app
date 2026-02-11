@@ -12,12 +12,24 @@
 
 ### 重要说明
 
-1. 请把自己的图片放在
-    > python_api/nice_imgs  
-    > 或是自定义文件夹。找到 main.py, 修改 img_root_dir = "./nice_imgs"
+1. 本地图库请放在 `imgs_data/<文件夹名>`，前端会自动读取这些文件夹。
+2. 上传图片会保存到 `backend_python_api/user_uploads`。
+3. Windows 系统可直接运行 `just_run.bat`。
 
-2. windows 系统, 请直接运行
-    > just_run.bat
+### 环境要求
+
+1. Python 3.10+（已安装 pip）
+2. Node.js 18+ 和 npm
+
+### 配置
+
+1. 默认前端通过代理访问 `http://localhost:8000`。
+2. 若前后端不在同一域名/端口，创建 `frontend_react_app/.env` 并设置 `REACT_APP_API_BASE_URL`。
+
+### 清理
+
+1. 删除图片会移动到 `backend_python_api/dustbin`。
+2. 需要定期手动清理该目录以释放磁盘空间。
 
 
 ## 分步骤运行
@@ -25,7 +37,7 @@
 ### 1. 启动 server
 - api:   uvicorn main:app --reload
 - 或者:   
-- uvicorn main:app  --reload --host 0.0.0.0 --port 8000
+- uvicorn main:app  --reload --host 127.0.0.1 --port 8000
 
 转到:   http://127.0.0.1:8000/docs
 转到:   http://127.0.0.1:8000/images

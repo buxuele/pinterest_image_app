@@ -1,5 +1,6 @@
 import React, { useState, useRef } from 'react';
-import axios from 'axios';
+import { apiClient } from '../config/api';
+import FeedbackAlert from './FeedbackAlert';
 
 const ImageUpload = ({ onUploadSuccess }) => {
   const [isDragging, setIsDragging] = useState(false);
@@ -64,7 +65,7 @@ const ImageUpload = ({ onUploadSuccess }) => {
         const formData = new FormData();
         formData.append('file', file);
 
-        const response = await axios.post('http://192.168.1.3:8000/api/upload-image', formData, {
+        const response = await apiClient.post('/api/upload-image', formData, {
           headers: {
             'Content-Type': 'multipart/form-data',
           },
@@ -184,16 +185,10 @@ const ImageUpload = ({ onUploadSuccess }) => {
         </div>
       )}
 
-      {error && (
-        <div className="alert alert-danger mt-3" role="alert">
-          {error}
-        </div>
-      )}
+      <FeedbackAlert message={error} onClose={() => setError(null)} className="mt-3" />
 
       {uploadStatus && Object.values(uploadStatus).every(status => status === 'success') && (
-        <div className="alert alert-success mt-3" role="alert">
-          所有图片上传成功！
-        </div>
+        <FeedbackAlert message="所有图片上传成功！" variant="success" className="mt-3" />
       )}
     </div>
   );

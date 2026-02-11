@@ -1,12 +1,10 @@
  
 .idea/
-node_modules/
+ 
+backend_python_api/pinterest_venv/
+backend_python_api/user_uploads/
+backend_python_api/dustbin/
 
-backend_python_api/pinterest_venv/
-backend_python_api/pinterest_venv/
-/user_uploads/
-backend_python_api/pinterest_venv/
-/nice_imgs/
 
 .env
 gg.bat

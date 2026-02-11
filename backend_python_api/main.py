@@ -12,34 +12,22 @@ from utils.rename_imgs import *
 
 app = FastAPI(title="Image API")
 
-
-# 配置 CORS，允许 React 访问
 app.add_middleware(
     CORSMiddleware,
-    # allow_origins=["http://localhost:3000", "http://localhost:3001",
-    #                "http://192.168.1.*",  # 或者用通配符匹配局域网范围（视框架支持）
-    #                "*"],
-    
     allow_origins=[ "*" ],
-
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# 图片根目录
 IMGS_DATA_DIR = Path("../imgs_data")
-# 当前选择的图片目录
 current_img_dir = Path("../imgs_data/cool_imgs")
 
-# 动态挂载图片目录的字典
 mounted_dirs = {}
 
-# 创建用户上传图片的目录
 UPLOAD_DIR = "./user_uploads"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
-# 挂载用户上传的图片目录
 app.mount("/user_images", StaticFiles(directory=UPLOAD_DIR), name="user_images")
 
 
@@ -57,18 +45,14 @@ def get_folders():
     except Exception as e:
         return {"status": "error", "message": str(e)}
 
-# 获取图片列表（支持分页和文件夹选择）
 @app.get("/images", response_model=List[dict])
 def get_images(skip: int = 0, limit: int = 5, folder: str = "cool_imgs"):
     try:
-        # 构建图片目录路径
         image_dir = IMGS_DATA_DIR / folder
         
-        # 检查目录是否存在
         if not image_dir.exists():
             return []
         
-        # 动态挂载该文件夹（如果还没挂载）
         mount_path = f"/images/{folder}"
         if mount_path not in mounted_dirs:
             try:
@@ -77,15 +61,12 @@ def get_images(skip: int = 0, limit: int = 5, folder: str = "cool_imgs"):
             except Exception as e:
                 print(f"挂载目录失败: {e}")
         
-        # 获取图片文件列表
         images = [
             {"filename": f, "url": f"{mount_path}/{f}"}
             for f in os.listdir(image_dir)
             if f.lower().endswith(('.png', '.jpg', '.jpeg', '.gif', '.webp', '.tif'))
         ]
         
-        # 分页
-        total = len(images)
         images = images[skip:skip + limit]
         return images
     except Exception as e:
@@ -106,10 +87,8 @@ async def reshuffle_images(folder: str = "cool_imgs"):
 @app.post("/api/upload-image")
 async def upload_image(file: UploadFile = File(...)):
     try:
-        # 直接使用原始文件名，不重命名
         original_filename = file.filename
         
-        # 如果文件已存在，添加数字后缀
         file_path = os.path.join(UPLOAD_DIR, original_filename)
         counter = 1
         name, ext = os.path.splitext(original_filename)
@@ -120,7 +99,6 @@ async def upload_image(file: UploadFile = File(...)):
         
         final_filename = os.path.basename(file_path)
         
-        # 保存文件
         with open(file_path, "wb") as buffer:
             shutil.copyfileobj(file.file, buffer)
         
@@ -145,7 +123,6 @@ async def get_user_images():
                         os.path.getctime(os.path.join(UPLOAD_DIR, filename))
                     ).strftime("%Y-%m-%d %H:%M:%S")
                 })
-        # 按上传时间倒序排序
         images.sort(key=lambda x: x["upload_time"], reverse=True)
         return images
     except Exception as e:
@@ -154,37 +131,53 @@ async def get_user_images():
 @app.delete("/api/user-images/{filename}")
 async def delete_user_image(filename: str):
     try:
-        # 构建完整的文件路径
         file_path = os.path.join(UPLOAD_DIR, filename)
         
-        # 检查文件是否存在
         if not os.path.exists(file_path):
             raise HTTPException(status_code=404, detail="图片不存在")
             
-        # 检查文件是否在允许的目录中
         if not os.path.abspath(file_path).startswith(os.path.abspath(UPLOAD_DIR)):
             raise HTTPException(status_code=403, detail="无权删除此文件")
             
-        # 检查文件扩展名
-        if not filename.lower().endswith(('.png', '.jpg', '.jpeg', '.gif', '.webp')):
+        if not filename.lower().endswith(('.png', '.jpg', '.jpeg', '.gif', '.webp', '.jfif', '.tif')):
             raise HTTPException(status_code=400, detail="不支持的文件类型")
             
-        # 删除文件
-        # os.remove(file_path)
-
-        # 构建目标文件夹路径（桌面上的 del_me 文件夹）
-        desktop_path = os.path.expanduser("~/Desktop")
-        del_me_path = os.path.join(desktop_path, "del_me")
+        dustbin_path = "./dustbin"
         
-        # 如果 del_me 文件夹不存在，创建它
-        if not os.path.exists(del_me_path):
-            os.makedirs(del_me_path)
+        if not os.path.exists(dustbin_path):
+            os.makedirs(dustbin_path)
         
-        # 构建目标文件的完整路径
-        target_path = os.path.join(del_me_path, filename)
-        
-        # 移动文件到 del_me 文件夹
+        target_path = os.path.join(dustbin_path, filename)
         shutil.move(file_path, target_path)
+        
+        return {"status": "success", "message": "图片已删除"}
+    except HTTPException as he:
+        raise he
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.delete("/api/images/{folder}/{filename}")
+async def delete_folder_image(folder: str, filename: str):
+    try:
+        image_dir = IMGS_DATA_DIR / folder
+        file_path = image_dir / filename
+        
+        if not file_path.exists():
+            raise HTTPException(status_code=404, detail="图片不存在")
+            
+        if not str(file_path.resolve()).startswith(str(image_dir.resolve())):
+            raise HTTPException(status_code=403, detail="无权删除此文件")
+            
+        if not filename.lower().endswith(('.png', '.jpg', '.jpeg', '.gif', '.webp', '.jfif', '.tif')):
+            raise HTTPException(status_code=400, detail="不支持的文件类型")
+            
+        dustbin_path = "./dustbin"
+        
+        if not os.path.exists(dustbin_path):
+            os.makedirs(dustbin_path)
+        
+        target_path = os.path.join(dustbin_path, filename)
+        shutil.move(str(file_path), target_path)
         
         return {"status": "success", "message": "图片已删除"}
     except HTTPException as he:
@@ -195,21 +188,14 @@ async def delete_user_image(filename: str):
 
 
 """
-下面这个命令，会导致手机上无法访问图片！！！ 不推荐！
-uvicorn main:app --reload
+本应用推荐使用本地回环地址以避免代理软件（如 Clash Verge）拦截导致的 502 问题。
+
+运行命令: 
+
+uvicorn main:app --host 127.0.0.1 --port 8000 --reload
+
+访问: 
 http://127.0.0.1:8000
-
-
-正确的运行命令: 
-
-确保 FastAPI 服务器已经在电脑上启动，并且绑定到 0.0.0.0，
-而不是默认的 127.0.0.1，命令如下：
-
-uvicorn main:app --host 0.0.0.0 --port 8000 --reload
-
-进入  http://127.0.0.1:8000
-查看效果
-
 """
 
 

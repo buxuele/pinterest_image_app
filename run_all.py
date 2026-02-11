@@ -9,7 +9,7 @@ def start_api(path):
     # 设置工作目录为 api 子目录
     api_dir = os.path.join(path, 'backend_python_api')
     # 在 api 目录下运行 uvicorn，启动 main.py 中的 app
-    subprocess.call(['uvicorn', 'main:app', '--reload', '--host', '0.0.0.0', '--port', '8000'], cwd=api_dir)
+    subprocess.call(['uvicorn', 'main:app', '--reload', '--host', '127.0.0.1', '--port', '8000'], cwd=api_dir)
 
 def start_frontend(path):
     # 启动 React 前端。 

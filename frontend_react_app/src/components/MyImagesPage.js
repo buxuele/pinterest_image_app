@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import { apiClient, withBaseUrl } from '../config/api';
 import ImageUpload from './ImageUpload';
+import FeedbackAlert from './FeedbackAlert';
 
 const MyImagesPage = () => {
   const [images, setImages] = useState([]);
@@ -11,7 +12,7 @@ const MyImagesPage = () => {
 
   const fetchImages = async () => {
     try {
-      const response = await axios.get('http://192.168.1.3:8000/api/user-images');
+      const response = await apiClient.get('/api/user-images');
       if (Array.isArray(response.data)) {
         setImages(response.data);
       } else {
@@ -35,7 +36,7 @@ const MyImagesPage = () => {
 
   const handleDeleteImage = async (filename) => {
     try {
-      const response = await axios.delete(`http://192.168.1.3:8000/api/user-images/${filename}`);
+      const response = await apiClient.delete(`/api/user-images/${filename}`);
       if (response.data.status === 'success') {
         setImages(images.filter(img => img.filename !== filename));
         showFlashMessage('删除成功');
@@ -67,15 +68,12 @@ const MyImagesPage = () => {
             animation: 'fadeInOut 2s ease-in-out'
           }}
         >
-          <div className="alert alert-success alert-dismissible fade show mb-0" role="alert">
-            {flashMessage}
-            <button 
-              type="button" 
-              className="btn-close" 
-              onClick={() => setFlashMessage('')}
-              aria-label="Close"
-            ></button>
-          </div>
+          <FeedbackAlert
+            message={flashMessage}
+            variant="success"
+            onClose={() => setFlashMessage('')}
+            className="mb-0"
+          />
         </div>
       )}
 
@@ -88,11 +86,7 @@ const MyImagesPage = () => {
         </button>
       </div>
 
-      {error && (
-        <div className="alert alert-danger" role="alert">
-          {error}
-        </div>
-      )}
+      <FeedbackAlert message={error} onClose={() => setError(null)} />
 
       {loading ? (
         <div className="text-center">
@@ -116,15 +110,14 @@ const MyImagesPage = () => {
             <div key={image.filename} className="col">
               <div className="card h-100">
                 <img
-                  src={`http://192.168.1.3:8000${image.url}`}
+                  src={withBaseUrl(image.url)}
                   className="card-img-top"
                   alt={image.filename}
                   style={{
-                    // height: '200px', // 我们不再需要固定的高度
-                    width: '100%', // 确保图片宽度填满卡片列
-                    aspectRatio: '1 / 1', // 核心改动：设置宽高比为1:1，即正方形
-                    objectFit: 'contain', // 保持不变，确保图片内容完整
-                    backgroundColor: '#212529' // 保持不变，作为背景填充
+                    width: '100%',
+                    aspectRatio: '1 / 1',
+                    objectFit: 'contain',
+                    backgroundColor: '#212529'
                   }}
                 />
                 <div className="card-body p-2 d-flex flex-column">
